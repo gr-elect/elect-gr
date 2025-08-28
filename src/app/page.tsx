@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { VoteChoice, VOTE_CHOICES, ResultsResponse } from '@/lib/schema';
-import { CheckCircle, BarChart3, Users, TrendingUp } from 'lucide-react';
+import { CheckCircle, BarChart3, Users } from 'lucide-react';
 
 export default function Home() {
   const [currentVote, setCurrentVote] = useState<VoteChoice | null>(null);

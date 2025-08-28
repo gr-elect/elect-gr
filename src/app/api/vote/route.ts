@@ -1,18 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-export function getSupabaseAdmin() {
-  const supabaseUrl = 'https://fhiwstgtgtkcxhyqwqjq.supabase.co';
-  const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZoaXdzdGd0Z3RrY3hoeXF3cWpxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjM4NDk2NSwiZXhwIjoyMDcxOTYwOTY1fQ.huslwihhaMcIg13hV7T2rFudBigsmfI0ly_7YTzi6y4';
-
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  });
-}
-
+import { getSupabaseAdmin } from '@/lib/supabaseClient';
 import { ipToHash } from '@/lib/hash';
 import { getClientIpFromRequest } from '@/lib/ip';
 import { voteSchema } from '@/lib/schema';
