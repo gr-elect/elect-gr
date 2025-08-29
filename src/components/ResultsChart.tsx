@@ -18,7 +18,6 @@ const colorMapping: Record<string, string> = {
   'Βελόπουλος': '#4db2ec',
   'Κασσελάκης': '#5b15a7',
   'Φάμελλος': '#774fa0',
-  'Τσίπρας': '#fa8072',
   'Χαρίτσης': '#e11b22',
   'Νατσιός': '#092544',
   'Άλλος': '#6b7280',
@@ -47,7 +46,7 @@ export function ResultsChart({ results }: ResultsChartProps) {
         <div className="bg-white dark:bg-gray-800 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="font-semibold text-gray-900 dark:text-gray-100">{label}</p>
           <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-bold">{data.pct}%</span> ({data.count} ψήφοι)
+            <span className="font-bold">{data.pct}%</span>
           </p>
         </div>
       );

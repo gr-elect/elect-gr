@@ -21,11 +21,25 @@ const partyInfo: Record<VoteChoice, { party: string; color: string }> = {
   'Βελόπουλος': { party: 'ΕΛΛΗΝΙΚΗ ΛΥΣΗ', color: 'bg-[#4db2ec]' },
   'Κασσελάκης': { party: 'ΚΙΝΗΜΑ ΔΗΜΟΚΡΑΤΙΑΣ', color: 'bg-[#5b15a7]' },
   'Φάμελλος': { party: 'ΣΥΡΙΖΑ', color: 'bg-[#774fa0]' },
-  'Τσίπρας': { party: 'ΣΥΡΙΖΑ', color: 'bg-[#fa8072]' },
   'Χαρίτσης': { party: 'ΝΕΑ ΑΡΙΣΤΕΡΑ', color: 'bg-[#e11b22]' },
   'Νατσιός': { party: 'ΝΙΚΗ', color: 'bg-[#092544]' },
   'Άλλος': { party: 'ΑΛΛΟ ΚΟΜΜΑ', color: 'bg-gray-500' },
   'Κανένας': { party: 'ΑΠΟΧΗ', color: 'bg-gray-400' }
+};
+
+const displayName: Record<VoteChoice, string> = {
+  'Μητσοτάκης': 'Μητσοτάκης Κ.',
+  'Ανδρουλάκης': 'Ανδρουλάκης Ν.',
+  'Κωνσταντοπούλου': 'Κωνσταντοπούλου Ζ.',
+  'Βελόπουλος': 'Βελόπουλος Κ.',
+  'Κουτσούμπας': 'Κουτσούμπας Δ.',
+  'Κασσελάκης': 'Κασσελάκης Σ.',
+  'Λατινοπούλου': 'Λατινοπούλου Α.',
+  'Φάμελλος': 'Φάμελλος Σ.',
+  'Χαρίτσης': 'Χαρίτσης Α.',
+  'Νατσιός': 'Νατσιός Ν.',
+  'Άλλος': 'Άλλος',
+  'Κανένας': 'Κανένας',
 };
 
 export function VoteOptionCard({ 
@@ -52,29 +66,30 @@ export function VoteOptionCard({
         onClick={() => !isLoading && onSelect(choice)}
       >
         <CardContent className="px-4 py-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                {choice}
+              <h3
+                className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 mb-1 whitespace-nowrap overflow-hidden text-ellipsis leading-tight"
+                title={displayName[choice] ?? choice}
+              >
+                {displayName[choice] ?? choice}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+
+              <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center">
+                <span className={`inline-block w-3 h-3 squared-sm mr-2 ${color}`} />
                 {party}
               </p>
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <div className={`w-4 h-4 rounded-full ${color}`} />
-              
-              {isSelected && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="text-primary"
-                >
-                  <Check size={20} />
-                </motion.div>
-              )}
-            </div>
+
+            {isSelected && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="text-primary mt-1"
+              >
+                <Check size={18} />
+              </motion.div>
+            )}
           </div>
         </CardContent>
       </Card>

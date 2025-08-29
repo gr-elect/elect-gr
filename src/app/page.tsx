@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { VoteChoice, VOTE_CHOICES, ResultsResponse } from '@/lib/schema';
-import { CheckCircle, BarChart3, Users } from 'lucide-react';
+import { CheckCircle, BarChart3, Users, Clock, Brain, Smartphone, Info } from 'lucide-react';
+import AnimatedCounter from '@/components/AnimatedCounter';
 
 export default function Home() {
   const [currentVote, setCurrentVote] = useState<VoteChoice | null>(null);
@@ -104,7 +105,6 @@ export default function Home() {
       'Βελόπουλος': '#4db2ec',
       'Κασσελάκης': '#5b15a7',
       'Φάμελλος': '#774fa0',
-      'Τσίπρας': '#fa8072',
       'Χαρίτσης': '#e11b22',
       'Νατσιός': '#092544',
       'Άλλος': '#6b7280',
@@ -124,13 +124,30 @@ export default function Home() {
       'Βελόπουλος': 'ΕΛΛΗΝΙΚΗ ΛΥΣΗ',
       'Κασσελάκης': 'ΚΙΝΗΜΑ ΔΗΜΟΚΡΑΤΙΑΣ',
       'Φάμελλος': 'ΣΥΡΙΖΑ',
-      'Τσίπρας': 'ΣΥΡΙΖΑ',
       'Χαρίτσης': 'ΝΕΑ ΑΡΙΣΤΕΡΑ',
       'Νατσιός': 'ΝΙΚΗ',
       'Άλλος': 'ΑΛΛΟ ΚΟΜΜΑ',
       'Κανένας': 'ΑΠΟΧΗ'
     };
     return partyMapping[choice] || 'ΑΓΝΩΣΤΟ';
+  };
+
+  const getDisplayName = (choice: string): string => {
+    const map: Record<string, string> = {
+      'Μητσοτάκης': 'Μητσοτάκης Κ.',
+      'Ανδρουλάκης': 'Ανδρουλάκης Ν.',
+      'Κωνσταντοπούλου': 'Κωνσταντοπούλου Ζ.',
+      'Βελόπουλος': 'Βελόπουλος Κ.',
+      'Κουτσούμπας': 'Κουτσούμπας Δ.',
+      'Κασσελάκης': 'Κασσελάκης Σ.',
+      'Λατινοπούλου': 'Λατινοπούλου Α.',
+      'Φάμελλος': 'Φάμελλος Σ.',
+      'Χαρίτσης': 'Χαρίτσης Α.',
+      'Νατσιός': 'Νατσιός Ν.',
+      'Άλλος': 'Άλλος',
+      'Κανένας': 'Κανένας'
+    };
+    return map[choice] ?? choice;
   };
 
   return (
@@ -152,7 +169,7 @@ export default function Home() {
             Βουλευτικές Εκλογές 2027
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            Ποιον εμπιστεύεστε περισσότερο για Πρωθυπουργό της χώρας;
+            Ποιον θεωρείτε καταλληλότερο για Πρωθυπουργό της χώρας;
           </p>
         </motion.div>
 
@@ -192,20 +209,40 @@ export default function Home() {
               {/* Vote Info Card */}
               <Card className="mb-6">
                 <CardHeader>
-                  <CardTitle className="text-center">
-                    Κάνε κλικ για να ψηφίσεις
-                  </CardTitle>
-                  <div className="flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-600 mr-2" />
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Σύνολο ψήφων: {results?.total || 0} (τελευταίες 30 ημέρες)
-                    </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-center sm:text-left">Κάνε κλικ για να ψηφίσεις</CardTitle>
+                      <div className="flex items-center justify-center sm:justify-start mt-2">
+                        <Users className="w-5 h-5 text-blue-600 mr-2" />
+                        <p className="text-gray-600 dark:text-gray-400">
+                          Σύνολο ψήφων:{' '}
+                          {isLoading || !results ? (
+                            <span className="inline-block align-middle h-5 w-16 sm:w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                          ) : (
+                            <span className="tabular-nums">
+                              <AnimatedCounter value={results?.total || 0} />
+                            </span>
+                          )}{' '}
+                          (τελευταίες 30 ημέρες)
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleViewResults}
+                      variant="outline"
+                      size="sm"
+                      className="self-center sm:self-auto"
+                      disabled={isLoading}
+                    >
+                      Προβολή Αποτελεσμάτων
+                    </Button>
                   </div>
                 </CardHeader>
               </Card>
 
               {/* Vote Options */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
                                  {VOTE_CHOICES.map((choice) => (
                   <VoteOptionCard
                     key={choice}
@@ -242,14 +279,34 @@ export default function Home() {
               {/* Results Header */}
               <Card className="mb-6">
                 <CardHeader>
-                  <CardTitle className="text-center">
-                    Αποτελέσματα Δημοσκόπησης
-                  </CardTitle>
-                  <div className="flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-600 mr-2" />
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Σύνολο ψήφων: {results?.total || 0} (τελευταίες 30 ημέρες)
-                    </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-center sm:text-left">Αποτελέσματα Δημοσκόπησης</CardTitle>
+                      <div className="flex items-center justify-center sm:justify-start mt-2">
+                        <Users className="w-5 h-5 text-blue-600 mr-2" />
+                        <p className="text-gray-600 dark:text-gray-400">
+                          Σύνολο ψήφων:{' '}
+                          {isLoading || !results ? (
+                            <span className="inline-block align-middle h-5 w-16 sm:w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                          ) : (
+                            <span className="tabular-nums">
+                              <AnimatedCounter value={results?.total || 0} />
+                            </span>
+                          )}{' '}
+                          (τελευταίες 30 ημέρες)
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleChangeVote}
+                      variant="outline"
+                      size="sm"
+                      className="self-center sm:self-auto"
+                      disabled={isLoading}
+                    >
+                      Αλλαγή ψήφου
+                    </Button>
                   </div>
                 </CardHeader>
               </Card>
@@ -263,29 +320,31 @@ export default function Home() {
                   {results?.data
                     ?.sort((a, b) => b.count - a.count) // Ταξινόμηση από τις περισσότερες προς τις λιγότερες ψήφους
                     ?.map((item, index) => (
-                      <Card key={item.choice}>
+                      <Card key={item.choice} className="relative">
+                        {/* Badge αρίθμησης πάνω-αριστερά */}
+                        <span className="absolute top-2 left-2 text-xxs md:text-xs font-bold text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+                          #{index + 1}
+                        </span>
+
                         <CardContent className="px-4 py-3">
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                <span className="text-xs font-bold text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-600 px-2 py-1 rounded-full">
-                                  #{index + 1}
-                                </span>
-                                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                                  {item.choice}
-                                </h3>
-                              </div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                              <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 mb-1 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
+                                {getDisplayName(item.choice)}
+                              </h3>
+
+                              <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center mb-2">
+                                <span
+                                  className="inline-block w-3 h-3 squared-sm mr-2"
+                                  style={{ backgroundColor: getColorForChoice(item.choice) }}
+                                />
                                 {getPartyForChoice(item.choice)}
                               </p>
+
                               <p className="text-sm text-gray-600 dark:text-gray-400">
-                                <span className="font-bold">{item.pct}%</span> ({item.count} ψήφοι)
+                                <span className="font-bold">{item.pct}%</span>
                               </p>
                             </div>
-                            <div 
-                              className="w-4 h-4 rounded-full"
-                              style={{ backgroundColor: getColorForChoice(item.choice) }}
-                            />
                           </div>
                         </CardContent>
                       </Card>
@@ -302,6 +361,101 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Information Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-16"
+        >
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              Πώς λειτουργεί η πλατφόρμα
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Διαφάνεια και αξιοπιστία στη δημοσκόπηση
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <Clock className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      Σύγχρονα Δεδομένα
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                      Διατηρούμε καταχωρίσεις από τις τελευταίες 30 ημέρες προκειμένου τα αποτελέσματα 
+                      να αντικατοπτρίζουν την πιο πρόσφατη πολιτική σφυγμομέτρηση της κοινής γνώμης.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <Brain className="w-8 h-8 text-purple-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      Στατιστική Ανάλυση
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                      Με τη χρήση αλγορίθμων τεχνητής νοημοσύνης, πραγματοποιείται στάθμιση των 
+                      αποτελεσμάτων βάσει δημογραφικών στοιχείων της τελευταίας απογραφής.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <Smartphone className="w-8 h-8 text-green-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      Μία Ψήφος ανά Συσκευή
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                      Κάθε συσκευή δικαιούται μίας ψήφου για τη διασφάλιση της εγκυρότητας της 
+                      διαδικασίας. Παρέχεται δυνατότητα τροποποίησης της επιλογής σας.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <Info className="w-8 h-8 text-orange-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      Ενημερωτικός Χαρακτήρας
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                      Η παρούσα πλατφόρμα δεν αποτελεί επίσημη υπηρεσία του Δημοσίου. Ο σκοπός 
+                      της είναι αποκλειστικά ενημερωτικός και η συμμετοχή είναι εθελοντική.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </motion.div>
 
         {/* Footer */}
         <motion.div
