@@ -1,6 +1,6 @@
 'use client';
 
-import { Demographics, PollType, VoteChoice, PartyChoice } from './schema';
+import { Demographics, VoteChoice, PartyChoice } from './schema';
 
 // Cookie names
 const DEMOGRAPHICS_COOKIE = 'poll_demographics';

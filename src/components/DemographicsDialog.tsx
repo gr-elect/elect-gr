@@ -1,25 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, ChevronDown, Users, MapPin, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { VoteChoice, GENDER_CHOICES, AGE_GROUPS, Demographics } from '@/lib/schema';
-import { getAllMunicipalities, searchMunicipalities, Municipality } from '@/lib/municipalities';
+import { VoteChoice, PartyChoice, GENDER_CHOICES, AGE_GROUPS, Demographics } from '@/lib/schema';
+import { searchMunicipalities } from '@/lib/municipalities';
 import { loadDemographics } from '@/lib/cookies';
 import { useEffect } from 'react';
 
 interface DemographicsDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (choice: VoteChoice, demographics: Demographics) => void;
-  selectedChoice: VoteChoice;
+  onSubmit: (choice: VoteChoice | PartyChoice, demographics: Demographics) => void;
+  selectedChoice: VoteChoice | PartyChoice;
   isLoading?: boolean;
 }
 
@@ -36,7 +34,6 @@ export function DemographicsDialog({
   const [municipalityOpen, setMunicipalityOpen] = useState(false);
   const [municipalitySearch, setMunicipalitySearch] = useState('');
 
-  const municipalities = getAllMunicipalities();
   const filteredMunicipalities = searchMunicipalities(municipalitySearch);
 
   useEffect(() => {
@@ -55,8 +52,8 @@ export function DemographicsDialog({
     if (!gender || !ageGroup || !municipality) return;
 
     const demographics: Demographics = {
-      gender: gender as any,
-      ageGroup: ageGroup as any,
+      gender: gender as Demographics['gender'],
+      ageGroup: ageGroup as Demographics['ageGroup'], 
       municipality
     };
 

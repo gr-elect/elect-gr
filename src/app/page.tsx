@@ -519,7 +519,7 @@ export default function Home() {
           <DemographicsDialog
             isOpen={showDemographicsDialog}
             onClose={handleDemographicsClose}
-            onSubmit={handleDemographicsSubmit}
+            onSubmit={(choice, demographics) => handleDemographicsSubmit(choice as VoteChoice, demographics)}
             selectedChoice={pendingVoteChoice}
             isLoading={isLoading}
           />

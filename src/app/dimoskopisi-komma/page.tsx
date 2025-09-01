@@ -382,7 +382,7 @@ export default function PartyPollPage() {
           <DemographicsDialog
             isOpen={showDemographicsDialog}
             onClose={handleDemographicsClose}
-            onSubmit={handleDemographicsSubmit}
+            onSubmit={(choice, demographics) => handleDemographicsSubmit(choice as PartyChoice, demographics)}
             selectedChoice={pendingVoteChoice}
             isLoading={isLoading}
           />
