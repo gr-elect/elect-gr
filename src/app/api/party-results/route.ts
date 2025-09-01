@@ -6,52 +6,47 @@ export async function GET() {
   try {
     const supabaseAdmin = getSupabaseAdmin();
     
-    // Υπολογισμός ημερομηνίας 30 ημερών πριν
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Παίρνουμε τα counts με SQL aggregation αντί για όλες τις εγγραφές
+    const results = [];
+    let total = 0;
 
-    const { data, error } = await supabaseAdmin
-      .from('votes')
-      .select('choice')
-      .eq('poll_type', 'party_preference')
-      .gte('created_at', thirtyDaysAgo.toISOString());
+    // Παίρνουμε το count για κάθε επιλογή ξεχωριστά
+    for (const choice of PARTY_CHOICES) {
+      const { count, error } = await supabaseAdmin
+        .from('votes')
+        .select('*', { count: 'exact', head: true })
+        .eq('choice', choice)
+        .eq('poll_type', 'party_preference');
 
-    if (error) {
-      console.error('Database error:', error);
-      return NextResponse.json(
-        { error: 'Database error occurred' },
-        { status: 500 }
-      );
+      if (error) {
+        console.error(`Error counting ${choice}:`, error);
+        return NextResponse.json(
+          { error: `Database error for ${choice}` },
+          { status: 500 }
+        );
+      }
+
+      const voteCount = count || 0;
+      results.push({ choice, count: voteCount, pct: 0 });
+      total += voteCount;
+      
+      console.log(`${choice}: ${voteCount} votes`); // Για debugging
     }
 
-    // Μέτρηση ψήφων ανά επιλογή
-    const voteCounts: Record<string, number> = {};
-    let totalVotes = 0;
-
-    // Αρχικοποίηση όλων των επιλογών με 0
-    PARTY_CHOICES.forEach(choice => {
-      voteCounts[choice] = 0;
+    // Υπολογίζουμε τα ποσοστά
+    results.forEach(result => {
+      result.pct = total > 0 ? Math.round((result.count / total) * 100 * 10) / 10 : 0;
     });
 
-    // Μέτρηση πραγματικών ψήφων
-    data.forEach(vote => {
-      if (voteCounts.hasOwnProperty(vote.choice)) {
-        voteCounts[vote.choice]++;
-        totalVotes++;
-      }
-    });
+    console.log(`Total party votes: ${total}`); // Για debugging
 
-    // Δημιουργία αποτελεσμάτων με ποσοστά
-    const results = PARTY_CHOICES.map(choice => ({
-      choice,
-      count: voteCounts[choice],
-      pct: totalVotes > 0 ? Math.round((voteCounts[choice] / totalVotes) * 100) : 0
-    }));
-
-    return NextResponse.json({
-      total: totalVotes,
+    const response = NextResponse.json({
+      total,
       data: results
     });
+
+    response.headers.set('Cache-Control', 'no-store');
+    return response;
   } catch (error) {
     console.error('Results error:', error);
     return NextResponse.json(
