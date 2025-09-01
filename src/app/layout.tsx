@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Δημοσκόπηση Βουλευτικών Εκλογών - Καταλληλότερος Πρωθυπουργός",
   description: "Βουλευτικές Εκλογές 2027. Ποιον θεωρείτε καταλληλότερο για Πρωθυπουργό της χώρας;",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

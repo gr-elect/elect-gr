@@ -10,9 +10,19 @@ create table if not exists public.votes (
     'Ανδρουλάκης',
     'Κωνσταντοπούλου',
     'Λατινοπούλου',
-    'Κουτσούμπας'
+    'Κουτσούμπας',
+    'Βελόπουλος',
+    'Κασσελάκης',
+    'Φάμελλος',
+    'Χαρίτσης',
+    'Νατσιός',
+    'Άλλος',
+    'Κανένας'
   )),
   user_agent text,
+  gender text check (gender in ('Άνδρας', 'Γυναίκα', 'Άλλο', 'Δεν απαντώ')),
+  age_group text check (age_group in ('17-24', '25-34', '35-44', '45-54', '55-64', '65+')),
+  municipality text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -38,3 +48,6 @@ alter table public.votes enable row level security;
 create index if not exists idx_votes_ip_hash on public.votes(ip_hash);
 create index if not exists idx_votes_choice on public.votes(choice);
 create index if not exists idx_votes_created_at on public.votes(created_at);
+create index if not exists idx_votes_gender on public.votes(gender);
+create index if not exists idx_votes_age_group on public.votes(age_group);
+create index if not exists idx_votes_municipality on public.votes(municipality);

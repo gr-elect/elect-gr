@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseClient';
 import { ipToHash } from '@/lib/hash';
 import { getClientIpFromRequest } from '@/lib/ip';
-import { voteSchema } from '@/lib/schema';
+import { partyVoteSchema } from '@/lib/schema';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { choice, demographics } = voteSchema.parse(body);
+    const { choice, demographics } = partyVoteSchema.parse(body);
     
     const clientIp = getClientIpFromRequest(request);
     const ipHash = ipToHash(clientIp);
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
         gender: demographics.gender,
         age_group: demographics.ageGroup,
         municipality: demographics.municipality,
-        poll_type: 'prime_minister'
+        poll_type: 'party_preference'
       }, {
         onConflict: 'ip_hash,poll_type'
       });
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error('Vote error:', error);
+    console.error('Party vote error:', error);
     return NextResponse.json(
       { error: 'Invalid request' },
       { status: 400 }
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       .from('votes')
       .select('choice')
       .eq('ip_hash', ipHash)
-      .eq('poll_type', 'prime_minister')
+      .eq('poll_type', 'party_preference')
       .single();
 
     if (error && error.code !== 'PGRST116') {
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ choice: data?.choice || null });
   } catch (error) {
-    console.error('Get vote error:', error);
+    console.error('Get party vote error:', error);
     return NextResponse.json(
       { error: 'Server error' },
       { status: 500 }
