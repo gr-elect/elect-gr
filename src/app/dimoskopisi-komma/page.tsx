@@ -2,32 +2,41 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { VoteOptionCard } from '@/components/VoteOptionCard';
-import { ResultsChart } from '@/components/ResultsChart';
+import { PartyVoteOptionCard } from '@/components/PartyVoteOptionCard';
+import { PartyResultsChart } from '@/components/PartyResultsChart';
 import { Loader } from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { VoteChoice, VOTE_CHOICES, ResultsResponse, Demographics } from '@/lib/schema';
-import { BarChart3, Users, Clock, Brain, Smartphone, Info } from 'lucide-react';
+import { PartyChoice, PARTY_CHOICES, Demographics } from '@/lib/schema';
+import { BarChart3, Users } from 'lucide-react';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import { DemographicsDialog } from '@/components/DemographicsDialog';
 import { TabNavigation } from '@/components/TabNavigation';
-import { loadDemographics, saveDemographics, loadPMVote, savePMVote } from '@/lib/cookies';
+import { loadDemographics, saveDemographics, loadPartyVote, savePartyVote } from '@/lib/cookies';
 
-export default function Home() {
-  const [currentVote, setCurrentVote] = useState<VoteChoice | null>(null);
-  const [results, setResults] = useState<ResultsResponse | null>(null);
+interface PartyResultsResponse {
+  total: number;
+  data: Array<{
+    choice: PartyChoice;
+    count: number;
+    pct: number;
+  }>;
+}
+
+export default function PartyPollPage() {
+  const [currentVote, setCurrentVote] = useState<PartyChoice | null>(null);
+  const [results, setResults] = useState<PartyResultsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDemographicsDialog, setShowDemographicsDialog] = useState(false);
-  const [pendingVoteChoice, setPendingVoteChoice] = useState<VoteChoice | null>(null);
+  const [pendingVoteChoice, setPendingVoteChoice] = useState<PartyChoice | null>(null);
 
   // Load current vote on mount
   useEffect(() => {
     // Load from cookies first
-    const savedVote = loadPMVote();
+    const savedVote = loadPartyVote();
     if (savedVote) {
       setCurrentVote(savedVote);
     }
@@ -38,7 +47,7 @@ export default function Home() {
 
   const fetchCurrentVote = async () => {
     try {
-      const response = await fetch('/api/vote');
+      const response = await fetch('/api/party-vote');
       const data = await response.json();
       if (data.choice) {
         setCurrentVote(data.choice);
@@ -50,7 +59,7 @@ export default function Home() {
 
   const fetchResults = async () => {
     try {
-      const response = await fetch('/api/results');
+      const response = await fetch('/api/party-results');
       const data = await response.json();
       setResults(data);
     } catch (error) {
@@ -59,7 +68,7 @@ export default function Home() {
     }
   };
 
-  const handleVote = (choice: VoteChoice) => {
+  const handleVote = (choice: PartyChoice) => {
     setPendingVoteChoice(choice);
     
     // Check if we have saved demographics
@@ -73,7 +82,7 @@ export default function Home() {
     }
   };
 
-  const handleDemographicsSubmit = async (choice: VoteChoice, demographics: Demographics) => {
+  const handleDemographicsSubmit = async (choice: PartyChoice, demographics: Demographics) => {
     setIsLoading(true);
     setError(null);
     setShowDemographicsDialog(false);
@@ -82,12 +91,12 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      const response = await fetch('/api/vote', {
+      const response = await fetch('/api/party-vote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ choice, demographics }),
+        body: JSON.stringify({ choice, demographics, pollType: 'party_preference' }),
       });
 
       if (!response.ok) {
@@ -95,7 +104,7 @@ export default function Home() {
       }
 
       setCurrentVote(choice);
-      savePMVote(choice); // Save to cookies
+      savePartyVote(choice); // Save to cookies
       saveDemographics(demographics); // Save demographics to cookies
       await fetchResults();
       setShowResults(true);
@@ -128,60 +137,23 @@ export default function Home() {
     setIsLoading(false);
   };
 
-  // Mapping χρωμάτων για κάθε υποψήφιο
+  // Mapping χρωμάτων για κάθε κόμμα
   const getColorForChoice = (choice: string): string => {
     const colorMapping: Record<string, string> = {
-      'Μητσοτάκης': '#1a5cc6',
-      'Ανδρουλάκης': '#027b3c',
-      'Κωνσταντοπούλου': '#af3b8b',
-      'Λατινοπούλου': '#1863dc',
-      'Κουτσούμπας': '#e70a11',
-      'Βελόπουλος': '#4db2ec',
-      'Κασσελάκης': '#5b15a7',
-      'Φάμελλος': '#774fa0',
-      'Χαρίτσης': '#e11b22',
-      'Νατσιός': '#092544',
-      'Άλλος': '#6b7280',
-      'Κανένας': '#9ca3af'
+      'ΝΔ': '#1a5cc6',
+      'ΠΑΣΟΚ': '#027b3c',
+      'ΠΛΕΥΣΗ ΕΛΕΥΘΕΡΙΑΣ': '#af3b8b',
+      'ΦΩΝΗ ΛΟΓΙΚΗΣ': '#1863dc',
+      'ΚΚΕ': '#e70a11',
+      'ΕΛΛΗΝΙΚΗ ΛΥΣΗ': '#4db2ec',
+      'ΚΙΝΗΜΑ ΔΗΜΟΚΡΑΤΙΑΣ': '#5b15a7',
+      'ΣΥΡΙΖΑ': '#774fa0',
+      'ΝΕΑ ΑΡΙΣΤΕΡΑ': '#e11b22',
+      'ΝΙΚΗ': '#092544',
+      'ΑΛΛΟ ΚΟΜΜΑ': '#6b7280',
+      'ΑΠΟΧΗ': '#9ca3af'
     };
     return colorMapping[choice] || '#6b7280';
-  };
-
-  // Mapping κομμάτων για κάθε υποψήφιο
-  const getPartyForChoice = (choice: string): string => {
-    const partyMapping: Record<string, string> = {
-      'Μητσοτάκης': 'ΝΔ',
-      'Ανδρουλάκης': 'ΠΑΣΟΚ',
-      'Κωνσταντοπούλου': 'ΠΛΕΥΣΗ ΕΛΕΥΘΕΡΙΑΣ',
-      'Λατινοπούλου': 'ΦΩΝΗ ΛΟΓΙΚΗΣ',
-      'Κουτσούμπας': 'ΚΚΕ',
-      'Βελόπουλος': 'ΕΛΛΗΝΙΚΗ ΛΥΣΗ',
-      'Κασσελάκης': 'ΚΙΝΗΜΑ ΔΗΜΟΚΡΑΤΙΑΣ',
-      'Φάμελλος': 'ΣΥΡΙΖΑ',
-      'Χαρίτσης': 'ΝΕΑ ΑΡΙΣΤΕΡΑ',
-      'Νατσιός': 'ΝΙΚΗ',
-      'Άλλος': 'ΑΛΛΟ ΚΟΜΜΑ',
-      'Κανένας': 'ΑΠΟΧΗ'
-    };
-    return partyMapping[choice] || 'ΑΓΝΩΣΤΟ';
-  };
-
-  const getDisplayName = (choice: string): string => {
-    const map: Record<string, string> = {
-      'Μητσοτάκης': 'Μητσοτάκης Κ.',
-      'Ανδρουλάκης': 'Ανδρουλάκης Ν.',
-      'Κωνσταντοπούλου': 'Κωνσταντοπούλου Ζ.',
-      'Βελόπουλος': 'Βελόπουλος Κ.',
-      'Κουτσούμπας': 'Κουτσούμπας Δ.',
-      'Κασσελάκης': 'Κασσελάκης Σ.',
-      'Λατινοπούλου': 'Λατινοπούλου Α.',
-      'Φάμελλος': 'Φάμελλος Σ.',
-      'Χαρίτσης': 'Χαρίτσης Α.',
-      'Νατσιός': 'Νατσιός Ν.',
-      'Άλλος': 'Άλλος',
-      'Κανένας': 'Κανένας'
-    };
-    return map[choice] ?? choice;
   };
 
   return (
@@ -209,12 +181,12 @@ export default function Home() {
               <path d="M22 19H2" />
             </svg>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              <span style={{ color: '#1a5cc6' }}>Δημοσκόπηση</span> Καταλληλότερος Πρωθυπουργός
+              <span style={{ color: '#1a5cc6' }}>Δημοσκόπηση</span> Βουλευτικών Εκλογών
             </h1>
           </div>
           <TabNavigation />
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            <strong>Ποιον θεωρείτε καταλληλότερο για Πρωθυπουργό της χώρας;</strong>
+            <strong>Ποιο κόμμα σκοπεύετε να ψηφίσετε στις επόμενες εκλογές;</strong>
           </p>
         </motion.div>
 
@@ -238,7 +210,7 @@ export default function Home() {
         {isLoading && (
           <div className="flex justify-center py-8">
             <Loader />
-        </div>
+          </div>
         )}
 
         {/* Main Content */}
@@ -288,8 +260,8 @@ export default function Home() {
 
               {/* Vote Options */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
-                                 {VOTE_CHOICES.map((choice) => (
-                  <VoteOptionCard
+                {PARTY_CHOICES.map((choice) => (
+                  <PartyVoteOptionCard
                     key={choice}
                     choice={choice}
                     isSelected={currentVote === choice}
@@ -357,16 +329,15 @@ export default function Home() {
               </Card>
 
               {/* Chart */}
-              {results && <ResultsChart results={results} />}
+              {results && <PartyResultsChart results={results} />}
 
               {/* Results Details */}
               {results && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mt-6">
                   {results?.data
-                    ?.sort((a, b) => b.count - a.count) // Ταξινόμηση από τις περισσότερες προς τις λιγότερες ψήφους
+                    ?.sort((a, b) => b.count - a.count)
                     ?.map((item, index) => (
                       <Card key={item.choice} className="relative">
-                        {/* Badge αρίθμησης πάνω-αριστερά */}
                         <span className="absolute top-2 left-2 text-xxs md:text-xs font-bold text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-600 px-2 py-0.5 rounded-full">
                           #{index + 1}
                         </span>
@@ -375,7 +346,7 @@ export default function Home() {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 mb-1 whitespace-nowrap overflow-hidden text-ellipsis leading-tight">
-                                {getDisplayName(item.choice)}
+                                {item.choice}
                               </h3>
 
                               <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center mb-2">
@@ -383,7 +354,6 @@ export default function Home() {
                                   className="inline-block w-3 h-3 squared-sm mr-2"
                                   style={{ backgroundColor: getColorForChoice(item.choice) }}
                                 />
-                                {getPartyForChoice(item.choice)}
                               </p>
 
                               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -407,119 +377,12 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Information Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-16"
-        >
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              Πώς λειτουργεί η πλατφόρμα
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Διαφάνεια και αξιοπιστία στη δημοσκόπηση
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <Clock className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Σύγχρονα Δεδομένα
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                      Διατηρούμε καταχωρίσεις από τις τελευταίες 30 ημέρες προκειμένου τα αποτελέσματα 
-                      να αντικατοπτρίζουν την πιο πρόσφατη πολιτική σφυγμομέτρηση της κοινής γνώμης.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <Brain className="w-8 h-8 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Στατιστική Ανάλυση
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                      Με τη χρήση αλγορίθμων τεχνητής νοημοσύνης, πραγματοποιείται στάθμιση των 
-                      αποτελεσμάτων βάσει δημογραφικών στοιχείων της τελευταίας απογραφής.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <Smartphone className="w-8 h-8 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Μία Ψήφος ανά Συσκευή
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                      Κάθε συσκευή δικαιούται μίας ψήφου για τη διασφάλιση της εγκυρότητας της 
-                      διαδικασίας. Παρέχεται δυνατότητα τροποποίησης της επιλογής σας.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <Info className="w-8 h-8 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Ενημερωτικός Χαρακτήρας
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                      Η παρούσα πλατφόρμα δεν αποτελεί επίσημη υπηρεσία του Δημοσίου. Ο σκοπός 
-                      της είναι αποκλειστικά ενημερωτικός και η συμμετοχή είναι εθελοντική.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.div>
-
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
-        >
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Μη επίσημη διαδικτυακή ψηφοφορία. Τα αποτελέσματα είναι ενδεικτικά.
-          </p>
-        </motion.div>
-
         {/* Demographics Dialog */}
         {pendingVoteChoice && (
           <DemographicsDialog
             isOpen={showDemographicsDialog}
             onClose={handleDemographicsClose}
-            onSubmit={(choice, demographics) => handleDemographicsSubmit(choice as VoteChoice, demographics)}
+            onSubmit={(choice, demographics) => handleDemographicsSubmit(choice as PartyChoice, demographics)}
             selectedChoice={pendingVoteChoice}
             isLoading={isLoading}
           />

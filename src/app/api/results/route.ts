@@ -15,7 +15,8 @@ export async function GET() {
       const { count, error } = await supabaseAdmin
         .from('votes')
         .select('*', { count: 'exact', head: true })
-        .eq('choice', choice);
+        .eq('choice', choice)
+        .eq('poll_type', 'prime_minister');
 
       if (error) {
         console.error(`Error counting ${choice}:`, error);
