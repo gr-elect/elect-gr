@@ -264,7 +264,7 @@ export default function HomePageClient() {
                       <CardTitle className="text-center sm:text-left">Κάντε κλικ για να ψηφίσετε</CardTitle>
                       <div className="flex items-center justify-center sm:justify-start mt-2">
                         <Users className="w-5 h-5 text-blue-600 mr-2" />
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
                           Σύνολο ψήφων:{' '}
                           {isLoading || !results ? (
                             <span className="inline-block align-middle h-5 w-16 sm:w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
@@ -334,7 +334,7 @@ export default function HomePageClient() {
                       <CardTitle className="text-center sm:text-left">Αποτελέσματα Δημοσκόπησης</CardTitle>
                       <div className="flex items-center justify-center sm:justify-start mt-2">
                         <Users className="w-5 h-5 text-blue-600 mr-2" />
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
                           Σύνολο ψήφων:{' '}
                           {isLoading || !results ? (
                             <span className="inline-block align-middle h-5 w-16 sm:w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
