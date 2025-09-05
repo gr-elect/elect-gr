@@ -166,23 +166,27 @@ export default function PartyPageClient() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="flex items-center justify-center mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-8 h-8 text-blue-600 mr-3"
-            >
-              <path d="m9 12 2 2 4-4" />
-              <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z" />
-              <path d="M22 19H2" />
-            </svg>
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center mb-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-8 h-8 mr-2"
+                style={{ color: '#1a5cc6' }}
+              >
+                <path d="m9 12 2 2 4-4" />
+                <path d="M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z" />
+                <path d="M22 19H2" />
+              </svg>
+              <span className="text-3xl font-bold" style={{ color: '#1a5cc6' }}>Δημοσκόπηση</span>
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              <span style={{ color: '#1a5cc6' }}>Δημοσκόπηση</span> Βουλευτικών Εκλογών
+              Βουλευτικών Εκλογών
             </h1>
           </div>
           <TabNavigation />
@@ -232,7 +236,7 @@ export default function PartyPageClient() {
                       <CardTitle className="text-center sm:text-left">Κάντε κλικ για να ψηφίσετε</CardTitle>
                       <div className="flex items-center justify-center sm:justify-start mt-2">
                         <Users className="w-5 h-5 text-blue-600 mr-2" />
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                           Σύνολο ψήφων:{' '}
                           {isLoading || !results ? (
                             <span className="inline-block align-middle h-5 w-16 sm:w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
@@ -302,7 +306,7 @@ export default function PartyPageClient() {
                       <CardTitle className="text-center sm:text-left">Αποτελέσματα Δημοσκόπησης</CardTitle>
                       <div className="flex items-center justify-center sm:justify-start mt-2">
                         <Users className="w-5 h-5 text-blue-600 mr-2" />
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                           Σύνολο ψήφων:{' '}
                           {isLoading || !results ? (
                             <span className="inline-block align-middle h-5 w-16 sm:w-20 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse" />
