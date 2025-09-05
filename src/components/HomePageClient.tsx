@@ -261,7 +261,12 @@ export default function HomePageClient() {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                      <CardTitle className="text-center sm:text-left">Κάντε κλικ για να ψηφίσετε</CardTitle>
+                      <CardTitle className="text-center sm:text-left flex items-center justify-center sm:justify-start gap-2">
+                        Κάντε κλικ για να ψηφίσετε
+                        <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md uppercase tracking-wide">
+                          LIVE
+                        </span>
+                      </CardTitle>
                       <div className="flex items-center justify-center sm:justify-start mt-2">
                         <Users className="w-5 h-5 text-blue-600 mr-2" />
                         <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
