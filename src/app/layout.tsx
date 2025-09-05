@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     default: "- Live Διαδικτυακές Δημοσκοπήσεις Ελλάδα"
   },
   description: "Η πλατφόρμα για live διαδικτυακές δημοσκοπήσεις στην Ελλάδα. Συμμετάσχετε σε δημοσκοπήσεις για τον καταλληλότερο πρωθυπουργό και τις βουλευτικές εκλογές με πραγματικό χρόνο αποτελέσματα.",
-  keywords: "δημοσκόπηση, Ελλάδα, πολιτική, εκλογές, live poll, πρωθυπουργός, κόμματα, elect.gr",
-  authors: [{ name: "Elect.gr Team" }],
-  creator: "Elect.gr",
-  publisher: "Elect.gr",
+  keywords: "δημοσκόπηση, Ελλάδα, πολιτική, εκλογές, live poll, πρωθυπουργός, κόμματα, eklogiko-kentro.gr",
+  authors: [{ name: "eklogiko-kentro.gr Team" }],
+  creator: "eklogiko-kentro.gr",
+  publisher: "eklogiko-kentro.gr",
   formatDetection: {
     email: false,
     address: false,
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "el_GR",
-    siteName: "Elect.gr",
+    siteName: "eklogiko-kentro.gr",
   },
   twitter: {
     card: "summary_large_image",
@@ -64,3 +64,33 @@ export default function RootLayout({
     </html>
   );
 }
+
+// Προσθήκη structured data για navigation
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "eklogiko-kentro.gr - Live Δημοσκοπήσεις",
+  "url": process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com"}/search?q={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "mainEntity": [
+    {
+      "@type": "WebPage",
+      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com"}/`,
+      "name": "Καταλληλότερος Πρωθυπουργός - Δημοσκόπηση",
+      "url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com"}/`
+    },
+    {
+      "@type": "WebPage", 
+      "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com"}/dimoskopisi-komma`,
+      "name": "Δημοσκόπηση Κομμάτων - Βουλευτικές Εκλογές",
+      "url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://your-domain.com"}/dimoskopisi-komma`
+    }
+  ]
+};
