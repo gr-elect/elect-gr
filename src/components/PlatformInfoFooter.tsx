@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock, Brain, Smartphone, Info } from 'lucide-react';
@@ -109,9 +110,33 @@ export function PlatformInfoFooter() {
         transition={{ delay: 0.5 }}
         className="text-center mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
       >
+        {/* Navigation Links */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 mb-6">
+          <Link 
+            href="/" 
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 font-medium"
+          >
+            Δημοσκόπηση Καταλληλότερος Πρωθυπουργός
+          </Link>
+          <div className="hidden sm:block w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
+          <Link 
+            href="/dimoskopisi-komma" 
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 font-medium"
+          >
+            Δημοσκόπηση Κομμάτων
+          </Link>
+        </div>
+        
+        {/* Disclaimer */}
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          Μη επίσημη διαδικτυακή ψηφοφορία. Τα αποτελέσματα είναι ενδεικτικά.
+        </p>
+        
+        {/* Contact */}
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Μη επίσημη διαδικτυακή ψηφοφορία. Τα αποτελέσματα είναι ενδεικτικά.</p><p className="text-sm text-gray-500 dark:text-gray-400">Επικοινωνία contact@eklogiko-kentro.gr</p>
-           </motion.div>
+          Επικοινωνία contact@eklogiko-kentro.gr
+        </p>
+      </motion.div>
     </>
   );
 }
